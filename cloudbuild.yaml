@@ -29,7 +29,7 @@ steps:
   waitFor: ['tf-plan']
 - id: 'opa-eval'
   name: 'gcr.io/${PROJECT_ID}/openpolicyagent:${_OPA_VERSION}'
-  args: ['eval', '--data', 'sample-bucket.rego', '--input', 'tfplan.json', 'data.terraform.validation.any_buckets_name_missing_team_label'] # docker run -v $PWD:/example openpolicyagent/opa eval --data example/sample-bucket.rego --input example/tfplan.json "data.terraform.validation.any_buckets_name_missing_team_label"
+  args: ['eval', '--data', 'sample-bucket.rego', '--input', 'tfplan.json', 'data.terraform.validation.any_buckets_missing_team_label'] # docker run -v $PWD:/example openpolicyagent/opa eval --data example/sample-bucket.rego --input example/tfplan.json "data.terraform.validation.any_buckets_missing_team_label"
   waitFor: ['tf-init'] 
 # artifacts:
 #   objects:

@@ -16,7 +16,7 @@ any_buckets_name[changes.change.after.name] { # Include name in set if
 }
 
 # Incremental rule. Find buckets without a team label in the Terraform plan
-any_buckets_name_missing_team_label[changes.change.after.name] { # Include name in set if
+any_buckets_missing_team_label[changes.change.after.name] { # Include name in set if
     changes := tfplan.resource_changes[_] # Some changes exist
     changes.type == "google_storage_bucket" # And they have this type
     not changes.change.after.labels.team # And does not have a team label

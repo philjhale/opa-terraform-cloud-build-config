@@ -24,7 +24,7 @@ Run OPA against a specified rule.
 ```
 docker run -v $PWD:/example openpolicyagent/opa eval --data example/sample-bucket.rego --input example/tfplan.json "data.terraform.validation.[rule-name]"
 # E.g.
-docker run -v $PWD:/example openpolicyagent/opa eval --data example/sample-bucket.rego --input example/tfplan.json "data.terraform.validation.any_buckets_name_missing_team_label"
+docker run -v $PWD:/example openpolicyagent/opa eval --data example/sample-bucket.rego --input example/tfplan.json "data.terraform.validation.any_buckets_missing_team_label"
 ```
 
 This should return a JSON response.
@@ -37,7 +37,7 @@ This should return a JSON response.
           "value": [
             "my-prefix-no-team-eu-my-suffix"
           ],
-          "text": "data.terraform.validation.any_buckets_name_missing_team_label",
+          "text": "data.terraform.validation.any_buckets_missing_team_label",
           "location": {
             "row": 1,
             "col": 1
