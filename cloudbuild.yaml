@@ -1,5 +1,6 @@
 substitutions:
   _TERRAFORM_VERSION: latest
+  _OPA_VERSION: latest
 steps:
 - id: 'tf-init'
   name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
@@ -26,7 +27,11 @@ steps:
     - |-
       terraform show -json tfplan.binary > tfplan.json
   waitFor: ['tf-plan']
-artifacts:
-  objects:
-    location: 'gs://${PROJECT_ID}_cloudbuild/artifacts'
-    paths: ['tfplan.binary', 'tfplan.json']
+- id: 'opa-eval'
+  name: 'gcr.io/${PROJECT_ID}/openpolicyagent:${_OPA_VERSION}'
+  args: ['eval', '--data', 'sample-bucket.rego', '--input', 'tfplan.json', 'data.terraform.validation.any_buckets_name_missing_team_label'] # docker run -v $PWD:/example openpolicyagent/opa eval --data example/sample-bucket.rego --input example/tfplan.json "data.terraform.validation.any_buckets_name_missing_team_label"
+  waitFor: ['tf-init'] 
+# artifacts:
+#   objects:
+#     location: 'gs://${PROJECT_ID}_cloudbuild/artifacts'
+#     paths: ['tfplan.binary', 'tfplan.json']
