@@ -12,7 +12,7 @@
 
 Generate the plan file.
 ```
-terraform plan --out tfplan.binary
+terraform plan -out=tfplan.binary
 ```
 
 Convert to JSON.
@@ -56,12 +56,16 @@ Enable Cloud Build.
 gcloud services enable cloudbuild.googleapis.com 
 ```
 
-Push a Terraform Docker image to Google Cloud Registry so it can be used by Cloud Build. Office documentation [here](https://cloud.google.com/container-registry/docs/pushing-and-pulling?hl=en_GB&_ga=2.159862335.-366884061.1571845612).
+Push the images we need to Google Cloud Registry so it can be used by Cloud Build. Official documentation [here](https://cloud.google.com/container-registry/docs/pushing-and-pulling?hl=en_GB&_ga=2.159862335.-366884061.1571845612).
 
 ```
 docker pull hashicorp/terraform
 docker tag hashicorp/terraform gcr.io/$GOOGLE_PROJECT_ID/terraform
 docker push gcr.io/$GOOGLE_PROJECT_ID/terraform
+
+docker pull openpolicyagent/opa
+docker tag openpolicyagent/opa gcr.io/$GOOGLE_PROJECT_ID/openpolicyagent
+docker push gcr.io/$GOOGLE_PROJECT_ID/openpolicyagent
 ```
 
 Submit a build. The results will be shown in the console and can also be viewed in the [Cloud Console](https://console.cloud.google.com/cloud-build).
