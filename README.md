@@ -27,7 +27,7 @@ docker run -v $PWD:/example openpolicyagent/opa eval --data example/sample-bucke
 docker run -v $PWD:/example openpolicyagent/opa eval --data example/sample-bucket.rego --input example/tfplan.json "data.terraform.validation.any_buckets_missing_team_label"
 ```
 
-This should return a JSON response.
+This should return a JSON response showing that the bucket named `bucket-prefix-no-team-label-eu-bucket-suffix` has failed the rule.
 ```
 {
   "result": [
@@ -35,8 +35,36 @@ This should return a JSON response.
       "expressions": [
         {
           "value": [
-            "my-prefix-no-team-eu-my-suffix"
+            "bucket-prefix-no-team-label-eu-bucket-suffix"
           ],
+          "text": "data.terraform.validation.any_buckets_missing_team_label",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+Edit `sample-bucket.tf` to add a team label.
+
+```
+labels = {
+    team = "my team"
+  }
+```
+
+Regenerate the plan JSON file and re-run `opa eval` to get the following result. This result shows that zero buckets have failed the missing team label rule.
+```
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": [],
           "text": "data.terraform.validation.any_buckets_missing_team_label",
           "location": {
             "row": 1,
