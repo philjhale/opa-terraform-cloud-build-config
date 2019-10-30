@@ -14,3 +14,7 @@ steps:
   name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   args: ['validate']
   waitFor: ['tf-init']
+- id: 'tf-plan'
+  name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  args: ['plan', '-lock=false',]
+  waitFor: ['tf-init']
