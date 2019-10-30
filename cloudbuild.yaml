@@ -16,5 +16,17 @@ steps:
   waitFor: ['tf-init']
 - id: 'tf-plan'
   name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
-  args: ['plan', '-lock=false',]
+  args: ['plan', '-lock=false', '-out=tfplan.binary']
   waitFor: ['tf-init']
+- id: 'tf-convert-plan-to-json'
+  name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  entrypoint: 'sh'
+  args:
+    - '-c'
+    - |-
+      terraform show -json tfplan.binary > tfplan.json
+  waitFor: ['tf-plan']
+artifacts:
+  objects:
+    location: 'gs://${PROJECT_ID}_cloudbuild/artifacts'
+    paths: ['tfplan.binary', 'tfplan.json']
