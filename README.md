@@ -22,12 +22,14 @@ terraform show -json tfplan.binary > tfplan.json
 
 Run OPA against a specified rule.
 ```
-docker run -v $PWD:/example openpolicyagent/opa eval --data example/sample-bucket.rego --input example/tfplan.json "data.terraform.validation.[rule-name]"
+docker run -v $PWD:/example openpolicyagent/opa eval --data example/storage-rules.rego --input example/tfplan.json "data.terraform.validation.[rule-name]"
 # E.g.
-docker run -v $PWD:/example openpolicyagent/opa eval --data example/sample-bucket.rego --input example/tfplan.json "data.terraform.validation.any_buckets_missing_team_label"
+docker run -v $PWD:/example openpolicyagent/opa eval --data example/storage-rules.rego --input example/tfplan.json "data.terraform.validation.must_have_team_label"
+
+docker run -v $PWD:/example openpolicyagent/opa eval --fail-defined --format pretty --data example/storage-rules.rego --input example/tfplan.json "data.terraform.validation.must_have_name_less_than_63_characters"
 ```
 
-This should return a JSON response showing that the bucket named `bucket-prefix-no-team-label-eu-bucket-suffix` has failed the rule.
+This should return a JSON response showing that the bucket named `bucket-missing-team-label` has failed the rule.
 ```
 {
   "result": [
@@ -35,9 +37,9 @@ This should return a JSON response showing that the bucket named `bucket-prefix-
       "expressions": [
         {
           "value": [
-            "bucket-prefix-no-team-label-eu-bucket-suffix"
+            "bucket-missing-team-label"
           ],
-          "text": "data.terraform.validation.any_buckets_missing_team_label",
+          "text": "data.terraform.validation.must_have_team_label",
           "location": {
             "row": 1,
             "col": 1
@@ -49,7 +51,7 @@ This should return a JSON response showing that the bucket named `bucket-prefix-
 }
 ```
 
-Edit `sample-bucket.tf` to add a team label.
+Edit `storage.tf` to add a team label.
 
 ```
 labels = {
@@ -65,7 +67,7 @@ Regenerate the plan JSON file and re-run `opa eval` to get the following result.
       "expressions": [
         {
           "value": [],
-          "text": "data.terraform.validation.any_buckets_missing_team_label",
+          "text": "data.terraform.validation.must_have_team_label",
           "location": {
             "row": 1,
             "col": 1
@@ -107,3 +109,5 @@ gcloud builds submit .
 - [OPA Terraform tutorial](https://www.openpolicyagent.org/docs/latest/terraform/)
 - [Running OPA using Docker](https://www.openpolicyagent.org/docs/latest/deployments/#running-with-docker)
 - [OPA policy cheatsheet](https://www.openpolicyagent.org/docs/latest/policy-cheatsheet/)
+- [Rego playground](https://play.openpolicyagent.org/)
+- [Rego safety FAQ](https://www.openpolicyagent.org/docs/latest/faq/#safety)
