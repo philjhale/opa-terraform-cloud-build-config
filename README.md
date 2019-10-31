@@ -20,62 +20,32 @@ Convert to JSON.
 terraform show -json tfplan.binary > tfplan.json
 ```
 
-Run OPA against a specified rule.
+Run OPA against a specified rule set.
 ```
-docker run -v $PWD:/example openpolicyagent/opa eval --data example/storage-rules.rego --input example/tfplan.json "data.terraform.validation.[rule-name]"
-# E.g.
-docker run -v $PWD:/example openpolicyagent/opa eval --data example/storage-rules.rego --input example/tfplan.json "data.terraform.validation.must_have_team_label"
-
-docker run -v $PWD:/example openpolicyagent/opa eval --fail-defined --format pretty --data example/storage-rules.rego --input example/tfplan.json "data.terraform.validation.must_have_name_less_than_63_characters"
+docker run -v $PWD:/example openpolicyagent/opa eval --fail-defined --format pretty --data example/rules --input example/tfplan.json "data.terraform.validation.rules"
 ```
 
-This should return a JSON response showing that the bucket named `bucket-missing-team-label` has failed the rule.
+This should return a JSON response showing all the rule violations.
 ```
 {
-  "result": [
-    {
-      "expressions": [
-        {
-          "value": [
-            "bucket-missing-team-label"
-          ],
-          "text": "data.terraform.validation.must_have_team_label",
-          "location": {
-            "row": 1,
-            "col": 1
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-
-Edit `storage.tf` to add a team label.
-
-```
-labels = {
-    team = "my team"
+  "pubsub": {
+    "must_have_name_less_than_20_characters": [
+      "tf-topic-too-long-0123456789"
+    ],
+    "valid": false
+  },
+  "storage": {
+    "must_be_in_eu": [
+      "bucket-not-in-eu"
+    ],
+    "must_have_name_less_than_63_characters": [
+      "bucket-name-too-long-012345678901234567890123456789012345678901234567890"
+    ],
+    "must_have_team_label": [
+      "bucket-missing-team-label"
+    ],
+    "valid": false
   }
-```
-
-Regenerate the plan JSON file and re-run `opa eval` to get the following result. This result shows that zero buckets have failed the missing team label rule.
-```
-{
-  "result": [
-    {
-      "expressions": [
-        {
-          "value": [],
-          "text": "data.terraform.validation.must_have_team_label",
-          "location": {
-            "row": 1,
-            "col": 1
-          }
-        }
-      ]
-    }
-  ]
 }
 ```
 
@@ -111,3 +81,4 @@ gcloud builds submit .
 - [OPA policy cheatsheet](https://www.openpolicyagent.org/docs/latest/policy-cheatsheet/)
 - [Rego playground](https://play.openpolicyagent.org/)
 - [Rego safety FAQ](https://www.openpolicyagent.org/docs/latest/faq/#safety)
+- [Example rules in forseti-security/resource-policy-evaluation-library](https://github.com/forseti-security/resource-policy-evaluation-library/tree/master/policy)

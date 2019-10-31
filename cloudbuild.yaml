@@ -29,9 +29,5 @@ steps:
   waitFor: ['tf-plan']
 - id: 'opa-eval'
   name: 'gcr.io/${PROJECT_ID}/openpolicyagent:${_OPA_VERSION}'
-  args: ['eval', '--fail-defined', '--data', 'storage-rules.rego', '--input', 'tfplan.json', '--format', 'pretty', 'data.terraform.validation.must_have_team_label[bucket_name]'] 
+  args: ['eval', '--fail-defined', '--data', 'rules/', '--input', 'tfplan.json', '--format', 'pretty', 'data.terraform.validation.rules'] 
   waitFor: ['tf-convert-plan-to-json'] 
-# artifacts:
-#   objects:
-#     location: 'gs://${PROJECT_ID}_cloudbuild/artifacts'
-#     paths: ['tfplan.binary', 'tfplan.json']
