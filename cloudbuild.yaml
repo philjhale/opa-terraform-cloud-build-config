@@ -29,5 +29,6 @@ steps:
   waitFor: ['tf-plan']
 - id: 'opa-eval'
   name: 'gcr.io/${PROJECT_ID}/openpolicyagent:${_OPA_VERSION}'
+  # TODO Figure out why this step always fails, regardless of whether the plan is valid
   args: ['eval', '--fail-defined', '--data', 'rules/', '--input', 'tfplan.json', '--format', 'pretty', 'data.terraform.validation.rules'] 
   waitFor: ['tf-convert-plan-to-json'] 
