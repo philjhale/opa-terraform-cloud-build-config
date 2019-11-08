@@ -3,7 +3,7 @@ substitutions:
   _OPA_VERSION: latest
 steps:
 - id: 'tf-init'
-  name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  name: 'hashicorp/terraform:${_TERRAFORM_VERSION}'
   args: ['init', '-backend-config=bucket=${PROJECT_ID}_terraform']
   env:
     - 'GOOGLE_CLOUD_PROJECT=$PROJECT_ID'
