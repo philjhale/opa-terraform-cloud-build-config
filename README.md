@@ -25,7 +25,7 @@ Run OPA against a specified rule set.
 docker run -v $PWD:/example openpolicyagent/opa eval --fail-defined --format pretty --data example/rules --input example/tfplan.json "data.terraform.validation.rules"
 ```
 
-This should return a JSON response showing all the rule violations.
+This returns a JSON response showing all the rule violations.
 ```
 {
   "pubsub": {
@@ -54,18 +54,6 @@ This should return a JSON response showing all the rule violations.
 Enable Cloud Build.
 ```
 gcloud services enable cloudbuild.googleapis.com 
-```
-
-Push the images we need to Google Cloud Registry so it can be used by Cloud Build. Official documentation [here](https://cloud.google.com/container-registry/docs/pushing-and-pulling?hl=en_GB&_ga=2.159862335.-366884061.1571845612).
-
-```
-docker pull hashicorp/terraform
-docker tag hashicorp/terraform gcr.io/$GOOGLE_PROJECT_ID/terraform
-docker push gcr.io/$GOOGLE_PROJECT_ID/terraform
-
-docker pull openpolicyagent/opa
-docker tag openpolicyagent/opa gcr.io/$GOOGLE_PROJECT_ID/openpolicyagent
-docker push gcr.io/$GOOGLE_PROJECT_ID/openpolicyagent
 ```
 
 Submit a build. The results will be shown in the console and can also be viewed in the [Cloud Console](https://console.cloud.google.com/cloud-build).

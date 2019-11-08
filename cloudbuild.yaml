@@ -8,19 +8,19 @@ steps:
   env:
     - 'GOOGLE_CLOUD_PROJECT=$PROJECT_ID'
 - id: 'tf-format'
-  name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  name: 'hashicorp/terraform:${_TERRAFORM_VERSION}'
   args: ['fmt', '-list=true', '-write=false', '-diff=true', '-check=true', '.']
   waitFor: ['tf-init']
 - id: 'tf-validate'
-  name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  name: 'hashicorp/terraform:${_TERRAFORM_VERSION}'
   args: ['validate']
   waitFor: ['tf-init']
 - id: 'tf-plan'
-  name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  name: 'hashicorp/terraform:${_TERRAFORM_VERSION}'
   args: ['plan', '-lock=false', '-out=tfplan.binary']
   waitFor: ['tf-init']
 - id: 'tf-convert-plan-to-json'
-  name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  name: 'hashicorp/terraform:${_TERRAFORM_VERSION}'
   entrypoint: 'sh'
   args:
     - '-c'
@@ -28,6 +28,7 @@ steps:
       terraform show -json tfplan.binary > tfplan.json
   waitFor: ['tf-plan']
 - id: 'opa-eval'
-  name: 'gcr.io/${PROJECT_ID}/openpolicyagent:${_OPA_VERSION}'
+  name: 'openpolicyagent/opa:${_OPA_VERSION}'
+  # TODO this always fails, even when TF is valid
   args: ['eval', '--fail-defined', '--data', 'rules/', '--input', 'tfplan.json', '--format', 'pretty', 'data.terraform.validation.rules'] 
   waitFor: ['tf-convert-plan-to-json'] 

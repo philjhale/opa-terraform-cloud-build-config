@@ -1,3 +1,4 @@
 .terraform
 terraform-key.json
 tfplan.*
+.DS_Store
